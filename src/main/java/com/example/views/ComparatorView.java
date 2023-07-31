@@ -18,7 +18,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class ComparatorView extends Application {
-
     @Override
     @SuppressWarnings("unchecked")
     public void start(Stage primaryStage) throws Exception {
@@ -60,6 +59,26 @@ public class ComparatorView extends Application {
 
         final TableColumn<IndividualView, Money> differenceColumn = new TableColumn<>("Diferença");
         differenceColumn.setCellValueFactory(new PropertyValueFactory<IndividualView, Money>("difference"));
+        // differenceColumn.setCellFactory(
+        //         new Callback<TableColumn<IndividualView, Money>, TableCell<IndividualView, Money>>() {
+
+        //             @Override
+        //             public TableCell<IndividualView, Money> call(
+        //                     final TableColumn<IndividualView, Money> col) {
+        //                 return new TableCell<IndividualView, Money>() {
+        //                     @Override
+        //                     public void updateItem(final Money money, final boolean empty) {
+        //                         super.updateItem(money, empty);
+        //                         if (empty) {
+        //                             setGraphic(null);
+        //                         } else {
+        //                             setText(money.toString());
+        //                         }
+        //                     }
+        //                 };
+        //             }
+
+        //         });
 
         final TableColumn<IndividualView, String> previousDetailsColumn = new TableColumn<>(
                 "Detalhes de " + previousTitle);
@@ -81,16 +100,17 @@ public class ComparatorView extends Application {
 
                     @Override
                     public TableCell<IndividualView, Hyperlink[]> call(
-                            TableColumn<IndividualView, Hyperlink[]> col) {
+                            final TableColumn<IndividualView, Hyperlink[]> col) {
                         return new TableCell<IndividualView, Hyperlink[]>() {
                             @Override
-                            public void updateItem(Hyperlink[] hyperlinks,
-                                    boolean empty) {
+                            public void updateItem(final Hyperlink[] hyperlinks,
+                                    final boolean empty) {
                                 super.updateItem(hyperlinks, empty);
                                 if (empty) {
                                     setGraphic(null);
                                 } else {
-                                    final VBox hyperlinksCombo = new VBox(hyperlinks);
+                                    final VBox hyperlinksCombo = new VBox(
+                                            hyperlinks);
                                     setGraphic(hyperlinksCombo);
                                 }
                             }

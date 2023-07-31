@@ -1,27 +1,25 @@
 package com.example;
 
 import java.text.DecimalFormat;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Money implements Comparable<Money> {
-    private static final Map<Currency, DecimalFormat> formatters = new HashMap<>();
+    private static final Map<Currency, Map<Boolean, DecimalFormat>> formatters = new HashMap<>();
     private static final Set<Money> all = new HashSet<>();
-    private static final Currency defaultCurrency = Currency.findOrCreate("R$");
-    private static final Function<Money, String> defaultTypist = new Function<Money,String>() {
-        @Override
-        public String apply(Money money) {
-            return money.getValue();
-        }
-    };
+    private static final Locale defaultLocale = new Locale("pt", "BR");
+    private static final Currency defaultCurrency = Currency.getInstance(defaultLocale);
+    private static final String defaultFormatterPattern = "¤ #,##0.00";
 
-    private Function<Money, String> typist = defaultTypist;
     public final double value;
     public final Currency currency;
-    public final DecimalFormat formatter;
+    public DecimalFormat formatter;
 
     public static Money findOrCreate(final double value, final Currency currency) {
         final Money moneyToFind = new Money(value, currency);
@@ -41,23 +39,90 @@ public class Money implements Comparable<Money> {
     }
 
     private DecimalFormat findOrCreateFormatter() {
+        return findOrCreateFormatter(false);
+    }
+
+    private DecimalFormat findOrCreateFormatter(final boolean isDifference) {
+
+        final Consumer<DecimalFormat> positivePrefixAdapter = new Consumer<DecimalFormat>() {
+            @Override
+            public void accept(final DecimalFormat formatter) {
+                final String currentPattern = formatter.getPositivePrefix();
+                if (isDifference) {
+                    if (!currentPattern.contains("+ ")) {
+                        formatter.setPositivePrefix("+ " + currentPattern);
+                    }
+                } else {
+                    if (currentPattern.contains("+ ")) {
+                        formatter.setPositivePrefix(currentPattern.substring(2));
+                    }
+                }
+            }
+        };
+
+        final Supplier<DecimalFormat> formatterCreator = new Supplier<DecimalFormat>() {
+            @Override
+            public DecimalFormat get() {
+                // Criar novo formatador
+                final DecimalFormat formatter = new DecimalFormat(defaultFormatterPattern);
+
+                // Definir moeda
+                formatter.setCurrency(currency);
+
+                // Definir novo prefixo
+                // Substituir o "-" por "- "
+                formatter.setNegativePrefix(formatter.getNegativePrefix().replace("-", "- "));
+                return formatter;
+            }
+        };
+
         if (formatters.containsKey(currency)) {
-            return formatters.get(currency);
+            // Se já tiver algum formatador pra essa moeda
+            final Map<Boolean, DecimalFormat> subMap = formatters.get(currency);
+
+            if (!subMap.containsKey(isDifference)) {
+                // Se não tiver formatador pra essa modalidade
+                // Clonar o formatador da outra modalidade
+
+                subMap.put(isDifference, formatterCreator.get());
+            }
+
+            final DecimalFormat formatter = subMap.get(isDifference);
+
+            // Ajustar o formatador à modalidade
+            positivePrefixAdapter.accept(formatter);
+
+            // Retornar o formatador
+            return formatter;
         } else {
-            final DecimalFormat formatter = new DecimalFormat(currency + " 0.00");
-            formatters.put(currency, formatter);
+            // Se não tiver nenhum formatador pra essa moeda
+            // Criar um formatador com as regras genéricas
+            final DecimalFormat formatter = formatterCreator.get();
+
+            // Adicionar o formatador a um novo submapa
+            final Map<Boolean, DecimalFormat> subMap = new HashMap<Boolean, DecimalFormat>();
+            subMap.put(isDifference, formatter);
+
+            // Adicionar o submapa ao mapa principal
+            formatters.put(currency, subMap);
+
+            // Ajustar o formatador à modalidade
+            positivePrefixAdapter.accept(formatter);
+
+            // Retornar o novo formatador
             return formatter;
         }
     }
 
-    protected Money(double value, Currency currency) {
+    private Money(final double value, final Currency currency) {
         this.value = value;
         this.currency = currency;
         this.formatter = findOrCreateFormatter();
     }
 
     public String getValue() {
-        return formatter.format(value);
+        final String format = formatter.format(value);
+        return format;
     }
 
     public boolean isPositive() {
@@ -73,25 +138,18 @@ public class Money implements Comparable<Money> {
     }
 
     public Money asNormal() {
-        typist = defaultTypist;
-
+        formatter = findOrCreateFormatter(false);
         return this;
     }
 
     public Money asDifference() {
-        typist = new Function<Money, String>() {
-            @Override
-            public String apply(final Money money) {
-                return(money.isPositive() ? "+" : "") + money.getValue();
-            }
-        };
-
+        formatter = findOrCreateFormatter(true);
         return this;
     }
 
     @Override
     public String toString() {
-        return typist.apply(this);
+        return getValue();
     }
 
     @Override
