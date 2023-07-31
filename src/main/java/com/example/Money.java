@@ -15,7 +15,7 @@ public class Money implements Comparable<Money> {
     private static final Set<Money> all = new HashSet<>();
     private static final Locale defaultLocale = new Locale("pt", "BR");
     private static final Currency defaultCurrency = Currency.getInstance(defaultLocale);
-    private static final String defaultFormatterPattern = "¤ #,##0.00";
+    private static final String defaultFormatterPattern = "¤ #,###,##0.00";
 
     public final double value;
     public final Currency currency;

@@ -14,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -59,26 +60,32 @@ public class ComparatorView extends Application {
 
         final TableColumn<IndividualView, Money> differenceColumn = new TableColumn<>("Diferença");
         differenceColumn.setCellValueFactory(new PropertyValueFactory<IndividualView, Money>("difference"));
-        // differenceColumn.setCellFactory(
-        //         new Callback<TableColumn<IndividualView, Money>, TableCell<IndividualView, Money>>() {
+        differenceColumn
+                .setCellFactory(new Callback<TableColumn<IndividualView, Money>, TableCell<IndividualView, Money>>() {
 
-        //             @Override
-        //             public TableCell<IndividualView, Money> call(
-        //                     final TableColumn<IndividualView, Money> col) {
-        //                 return new TableCell<IndividualView, Money>() {
-        //                     @Override
-        //                     public void updateItem(final Money money, final boolean empty) {
-        //                         super.updateItem(money, empty);
-        //                         if (empty) {
-        //                             setGraphic(null);
-        //                         } else {
-        //                             setText(money.toString());
-        //                         }
-        //                     }
-        //                 };
-        //             }
+                    @Override
+                    public TableCell<IndividualView, Money> call(final TableColumn<IndividualView, Money> cell) {
+                        return new TableCell<IndividualView, Money>() {
+                            @Override
+                            public void updateItem(final Money money, final boolean empty) {
+                                if (empty) {
+                                    setGraphic(null);
+                                } else {
+                                    setText(money.toString());
 
-        //         });
+                                    if (money.isPositive()) {
+                                        setTextFill(Color.GREEN);
+                                    } else if (money.isNegative()) {
+                                        setTextFill(Color.RED);
+                                    } else {
+                                        setTextFill(Color.GRAY);
+                                    }
+                                }
+                            }
+                        };
+                    }
+
+                });
 
         final TableColumn<IndividualView, String> previousDetailsColumn = new TableColumn<>(
                 "Detalhes de " + previousTitle);
@@ -100,7 +107,7 @@ public class ComparatorView extends Application {
 
                     @Override
                     public TableCell<IndividualView, Hyperlink[]> call(
-                            final TableColumn<IndividualView, Hyperlink[]> col) {
+                            final TableColumn<IndividualView, Hyperlink[]> cell) {
                         return new TableCell<IndividualView, Hyperlink[]>() {
                             @Override
                             public void updateItem(final Hyperlink[] hyperlinks,
@@ -109,9 +116,11 @@ public class ComparatorView extends Application {
                                 if (empty) {
                                     setGraphic(null);
                                 } else {
-                                    final VBox hyperlinksCombo = new VBox(
-                                            hyperlinks);
-                                    setGraphic(hyperlinksCombo);
+                                    for (final Hyperlink hyperlink : hyperlinks) {
+                                        hyperlink.setTextFill(Color.DARKGREEN);
+                                    }
+
+                                    setGraphic(new VBox(hyperlinks));
                                 }
                             }
                         };
@@ -161,17 +170,6 @@ public class ComparatorView extends Application {
                 @Override
                 protected void updateItem(IndividualView item, boolean empty) {
                     super.updateItem(item, empty);
-
-                    // if (item == null || empty) {
-                    // setStyle(""); // Restaura o estilo padrão da linha
-                    // } else {
-                    // if (item.getNumericDifference() >= -30 && item.getNumericDifference() <= 30)
-                    // {
-                    // setStyle("-fx-background-color: red; -fx-text-fill: white;");
-                    // } else {
-                    // setStyle(""); // Restaura o estilo padrão da linha
-                    // }
-                    // }
                 }
             };
         }

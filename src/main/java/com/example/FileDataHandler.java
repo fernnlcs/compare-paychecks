@@ -26,6 +26,7 @@ public abstract class FileDataHandler {
     // Método para formatar o nome do mês
     public static String formatMonth(final int month) {
         final Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.set(Calendar.MONTH, month - 1);
 
         final SimpleDateFormat format = new SimpleDateFormat("MM. MMMM", new Locale("pt", "BR"));
