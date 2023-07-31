@@ -1,65 +1,96 @@
 package com.example;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Money implements Comparable<Money> {
+    // Conjunto de formatadores 
     private static final Map<Currency, Map<Boolean, DecimalFormat>> formatters = new HashMap<>();
-    private static final Set<Money> all = new HashSet<>();
+
+    // Todas as instâncias de dinheiro criadas
+    private static final List<Money> instances = new ArrayList<>();
+
+    // Padrões para a moeda
     private static final Locale defaultLocale = new Locale("pt", "BR");
     private static final Currency defaultCurrency = Currency.getInstance(defaultLocale);
     private static final String defaultFormatterPattern = "¤ #,###,##0.00";
 
+    // Valor
     public final double value;
+
+    // Moeda
     public final Currency currency;
+
+    // Formatador do dinheiro para texto
     public DecimalFormat formatter;
 
+    // Obter a instância do dinheiro
     public static Money findOrCreate(final double value, final Currency currency) {
+        // Criar uma nova instância para buscar através de comparação
         final Money moneyToFind = new Money(value, currency);
 
-        for (final Money money : all) {
+        // Procurar se a instância já existe
+        for (final Money money : instances) {
             if (money.equals(moneyToFind)) {
+                // Retornar a instância existente
                 return money;
             }
         }
 
-        all.add(moneyToFind);
+        // Adicionar nova instância às existentes
+        instances.add(moneyToFind);
+
+        // Retornar nova instância
         return moneyToFind;
     }
 
+    // Obter a instância do dinheiro sem informar a moeda
     public static Money findOrCreate(final double value) {
+        // Invocar mesmo método, passando a moeda padrão como argumento
         return Money.findOrCreate(value, defaultCurrency);
     }
 
+    // Obter uma instância de formatador
     private DecimalFormat findOrCreateFormatter() {
         return findOrCreateFormatter(false);
     }
 
+    // Obter uma instância de formatador
     private DecimalFormat findOrCreateFormatter(final boolean isDifference) {
 
+        // Adaptador para colocar ou remover o "+ "
         final Consumer<DecimalFormat> positivePrefixAdapter = new Consumer<DecimalFormat>() {
             @Override
             public void accept(final DecimalFormat formatter) {
+                // Guardar o prefixo já existente
                 final String currentPattern = formatter.getPositivePrefix();
+
                 if (isDifference) {
+                    // Se o dinheiro se tratar de uma diferença de valores
                     if (!currentPattern.contains("+ ")) {
+                        // Se o prefixo existente ainda não tiver o "+ "
+                        // Adicionar o "+ "
                         formatter.setPositivePrefix("+ " + currentPattern);
                     }
                 } else {
+                    // Se o dinheiro NÃO se tratar de uma diferença de valores
                     if (currentPattern.contains("+ ")) {
+                        // Se o prefixo existente tiver o "+ "
+                        // Remover o "+ "
                         formatter.setPositivePrefix(currentPattern.substring(2));
                     }
                 }
             }
         };
 
+        // Criador de formatadores
         final Supplier<DecimalFormat> formatterCreator = new Supplier<DecimalFormat>() {
             @Override
             public DecimalFormat get() {
@@ -81,9 +112,8 @@ public class Money implements Comparable<Money> {
             final Map<Boolean, DecimalFormat> subMap = formatters.get(currency);
 
             if (!subMap.containsKey(isDifference)) {
-                // Se não tiver formatador pra essa modalidade
-                // Clonar o formatador da outra modalidade
-
+                // Se ainda não tiver formatador pra essa modalidade
+                // Criar um formatador para essa moeda e SEM ser diferença
                 subMap.put(isDifference, formatterCreator.get());
             }
 

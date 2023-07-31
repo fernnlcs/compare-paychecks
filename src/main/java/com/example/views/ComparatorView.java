@@ -21,7 +21,7 @@ import javafx.util.Callback;
 public class ComparatorView extends Application {
     @Override
     @SuppressWarnings("unchecked")
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         // Iniciar comparador
         final Comparator comparator = new Comparator();
 
