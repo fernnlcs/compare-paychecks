@@ -141,10 +141,22 @@ public class ComparatorView extends Application {
         tableView.getSortOrder().add(nameColumn);
 
         // Configuração da personalização da linha
-        tableView.setRowFactory(new CustomTableRowFactory());
+        tableView.setRowFactory(new Callback<TableView<IndividualView>, TableRow<IndividualView>>() {
+
+            @Override
+            public TableRow<IndividualView> call(final TableView<IndividualView> param) {
+                return new TableRow<IndividualView>() {
+                    @Override
+                    protected void updateItem(final IndividualView item, final boolean empty) {
+                        super.updateItem(item, empty);
+                    }
+                };
+            }
+
+        });
 
         // Criação do layout
-        AnchorPane root = new AnchorPane(tableView);
+        final AnchorPane root = new AnchorPane(tableView);
 
         // Configuração das âncoras da tabela
         AnchorPane.setTopAnchor(tableView, 0.0);
@@ -153,7 +165,7 @@ public class ComparatorView extends Application {
         AnchorPane.setRightAnchor(tableView, 0.0);
 
         // Criação da cena
-        Scene scene = new Scene(root, 1500, 700);
+        final Scene scene = new Scene(root, 1500, 700);
 
         // Configuração da janela
         primaryStage.setTitle("Comparação das folhas " + comparator.getPreviousPayroll().getCompetence() + " e "
@@ -161,17 +173,5 @@ public class ComparatorView extends Application {
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
-    }
-
-    private class CustomTableRowFactory implements Callback<TableView<IndividualView>, TableRow<IndividualView>> {
-        @Override
-        public TableRow<IndividualView> call(TableView<IndividualView> param) {
-            return new TableRow<IndividualView>() {
-                @Override
-                protected void updateItem(IndividualView item, boolean empty) {
-                    super.updateItem(item, empty);
-                }
-            };
-        }
     }
 }
