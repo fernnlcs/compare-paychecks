@@ -31,7 +31,7 @@ public class Money implements Comparable<Money> {
     // Formatador do dinheiro para texto
     public DecimalFormat formatter;
 
-    // Obter a instância do dinheiro
+    // Método para obter a instância do dinheiro
     public static Money findOrCreate(final double value, final Currency currency) {
         // Criar uma nova instância para buscar através de comparação
         final Money moneyToFind = new Money(value, currency);
@@ -51,18 +51,18 @@ public class Money implements Comparable<Money> {
         return moneyToFind;
     }
 
-    // Obter a instância do dinheiro sem informar a moeda
+    // Método para obter a instância do dinheiro sem informar a moeda
     public static Money findOrCreate(final double value) {
         // Invocar mesmo método, passando a moeda padrão como argumento
         return Money.findOrCreate(value, defaultCurrency);
     }
 
-    // Obter uma instância de formatador
+    // Método para obter uma instância de formatador
     private DecimalFormat findOrCreateFormatter() {
         return findOrCreateFormatter(false);
     }
 
-    // Obter uma instância de formatador
+    // Método para obter uma instância de formatador
     private DecimalFormat findOrCreateFormatter(final boolean isDifference) {
 
         // Adaptador para colocar ou remover o "+ "
@@ -154,17 +154,17 @@ public class Money implements Comparable<Money> {
         this.formatter = findOrCreateFormatter();
     }
 
-    // Saber se o valor é positivo
+    // Método para saber se o valor é positivo
     public boolean isPositive() {
         return value > 0;
     }
 
-    // Saber se o valor é negativo
+    // Método para saber se o valor é negativo
     public boolean isNegative() {
         return value < 0;
     }
 
-    // Saber se o valor é zero
+    // Método para saber se o valor é zero
     public boolean isZero() {
         return value == 0;
     }

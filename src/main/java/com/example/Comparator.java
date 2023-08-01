@@ -64,7 +64,7 @@ public class Comparator {
     }
 
     public HashSet<IndividualView> compare() {
-        final Set<Employee> employees = Employee.getAll();
+        final Set<Employee> employees = Employee.getInstances();
         final HashSet<IndividualView> result = new HashSet<>();
 
         for (final Employee employee : employees) {
