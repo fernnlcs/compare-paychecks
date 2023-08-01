@@ -144,34 +144,38 @@ public class Money implements Comparable<Money> {
         }
     }
 
+    // Construtor privado
     private Money(final double value, final Currency currency) {
+        // Atribuir valores
         this.value = value;
         this.currency = currency;
+
+        // Obter o formatador
         this.formatter = findOrCreateFormatter();
     }
 
-    public String getValue() {
-        final String format = formatter.format(value);
-        return format;
-    }
-
+    // Saber se o valor é positivo
     public boolean isPositive() {
         return value > 0;
     }
 
+    // Saber se o valor é negativo
     public boolean isNegative() {
         return value < 0;
     }
 
+    // Saber se o valor é zero
     public boolean isZero() {
         return value == 0;
     }
 
+    // Método para escrever o dinheiro na forma normal
     public Money asNormal() {
         formatter = findOrCreateFormatter(false);
         return this;
     }
 
+    // Método para escrever o dinheiro como diferença entre valores
     public Money asDifference() {
         formatter = findOrCreateFormatter(true);
         return this;
@@ -179,12 +183,13 @@ public class Money implements Comparable<Money> {
 
     @Override
     public String toString() {
-        return getValue();
+        return formatter.format(value);
     }
 
     @Override
-    public int compareTo(final Money o) {
-        return Double.compare(value, o.value);
+    public int compareTo(final Money other) {
+        // Retornar a comparação dos valores
+        return Double.compare(value, other.value);
     }
 
     @Override
