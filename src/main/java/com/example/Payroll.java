@@ -65,8 +65,15 @@ public class Payroll {
             final double value = Double.parseDouble(valueText.replace(".", "").replace(",", "."));
 
             final Employee employee = Employee.findOrCreate(employeeRegistration, employeeName);
-            final Paycheck paycheck = new Paycheck(employee, competence, value);
-            FileDataHandler.extractPaycheckDetails(paycheck, pageText);
+            final Paycheck paycheck = new Paycheck(employee, competence, value,
+                    FileDataHandler.extractPaycheckReference(pageText, Env.WORKED_DAYS_LABEL),
+                    FileDataHandler.extractPaycheckReference(pageText, Env.NIGHT_SHIFT_HOURS_LABEL),
+                    FileDataHandler.extractPaycheckValue(pageText, Env.OVERTIME_LABEL),
+                    FileDataHandler.extractPaycheckValue(pageText, Env.CLOSED_SECTOR_LABEL),
+                    FileDataHandler.checkIfPaycheckLabelExists(pageText, Env.HEALTH_CARE_PLAN_LABEL),
+                    FileDataHandler.checkIfPaycheckLabelExists(pageText, Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL)
+                    );
+            // FileDataHandler.extractPaycheckDetails(paycheck, pageText);
 
             paychecks.add(paycheck);
 

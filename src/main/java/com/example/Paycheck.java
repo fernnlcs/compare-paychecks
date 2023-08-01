@@ -31,7 +31,8 @@ public class Paycheck {
     }
 
     public Paycheck(final Employee employee, final Competence competence, final double value) {
-        this(employee, competence, value, 0, 0, 0.0, 0.0, false, false);
+        this(employee, competence, value, 0, 0, 0.0,
+                0.0, false, false);
     }
 
     public Money getValue() {
@@ -167,14 +168,15 @@ public class Paycheck {
     }
 
     // public void setHealthCarePlanActive(boolean healthCarePlanActive) {
-    //     this.healthCarePlanActive = healthCarePlanActive;
+    // this.healthCarePlanActive = healthCarePlanActive;
     // }
 
     public boolean isHealthCarePlanForDependentActive() {
         return healthCarePlanForDependentActive;
     }
 
-    // public void setHealthCarePlanForDependentActive(boolean healthCarePlanDependentActive) {
-    //     this.healthCarePlanForDependentActive = healthCarePlanDependentActive;
+    // public void setHealthCarePlanForDependentActive(boolean
+    // healthCarePlanDependentActive) {
+    // this.healthCarePlanForDependentActive = healthCarePlanDependentActive;
     // }
 }

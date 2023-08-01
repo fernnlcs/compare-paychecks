@@ -53,50 +53,81 @@ public abstract class FileDataHandler {
         return String.valueOf(chars);
     }
 
-    // Método para extrair os dias trabalhados
-    public static void extractPaycheckDetails(final Paycheck paycheck, final String pageText) {
-        final int startIndex = pageText.lastIndexOf(Env.DETAILS_TITLE);
-        final String textAdapt = pageText.substring(startIndex);
+    public static int extractPaycheckReference(final String pageText, final String description) {
+        try {
+            final int end = pageText.indexOf(description);
+            final String part = pageText.substring(0, end);
+            final int start = part.lastIndexOf(",");
 
-        final Function<String, Integer> getReference = new Function<String, Integer>() {
-            @Override
-            public Integer apply(final String description) {
-                try {
-                    final int end = textAdapt.indexOf(description);
-                    final String part = textAdapt.substring(0, end);
-                    final int start = part.lastIndexOf(",");
-
-                    return Integer.parseInt(textAdapt.substring(start + 3, end));
-                } catch (Exception e) {
-                    return 0;
-                }
-            }
-        };
-
-        final Function<String, Double> getValue = new Function<String, Double>() {
-            @Override
-            public Double apply(final String description) {
-                try {
-                    int end = textAdapt.indexOf(description);
-                    String part = textAdapt.substring(0, end);
-                    final int start = part.lastIndexOf("\n");
-                    end = part.lastIndexOf(",");
-                    part = part.substring(start + 1, end + 3);
-
-                    return Double.parseDouble(part.replace(",", "."));
-                } catch (Exception e) {
-                    return 0.0;
-                }
-            }
-        };
-
-        paycheck.setWorkedDays(getReference.apply(Env.WORKED_DAYS_LABEL));
-        paycheck.setNightShiftHours(getReference.apply(Env.NIGHT_SHIFT_HOURS_LABEL));
-        paycheck.setOvertimeValue(Money.findOrCreate(getValue.apply(Env.OVERTIME_LABEL)));
-        paycheck.setClosedSectorValue(Money.findOrCreate(getValue.apply(Env.CLOSED_SECTOR_LABEL)));
-        paycheck.setHealthCarePlanActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_LABEL));
-        paycheck.setHealthCarePlanForDependentActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL));
-
-        paycheck.getWorkedDays();
+            return Integer.parseInt(pageText.substring(start + 3, end));
+        } catch (Exception e) {
+            return 0;
+        }
     }
+
+    public static double extractPaycheckValue(final String pageText, final String description) {
+        try {
+            int end = pageText.indexOf(description);
+            String part = pageText.substring(0, end);
+            final int start = part.lastIndexOf("\n");
+            end = part.lastIndexOf(",");
+            part = part.substring(start + 1, end + 3);
+
+            return Double.parseDouble(part.replace(",", "."));
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    public static boolean checkIfPaycheckLabelExists(final String pageText, final String description) {
+        return pageText.contains(description);
+    }
+
+    // Método para extrair os dias trabalhados
+    // public static void extractPaycheckDetails(final Paycheck paycheck, final String pageText) {
+    //     final int startIndex = pageText.lastIndexOf(Env.DETAILS_TITLE);
+    //     final String textAdapt = pageText.substring(startIndex);
+
+    //     final Function<String, Integer> getReference = new Function<String, Integer>() {
+    //         @Override
+    //         public Integer apply(final String description) {
+    //             try {
+    //                 final int end = textAdapt.indexOf(description);
+    //                 final String part = textAdapt.substring(0, end);
+    //                 final int start = part.lastIndexOf(",");
+
+    //                 return Integer.parseInt(textAdapt.substring(start + 3, end));
+    //             } catch (Exception e) {
+    //                 return 0;
+    //             }
+    //         }
+    //     };
+
+    //     final Function<String, Double> getValue = new Function<String, Double>() {
+    //         @Override
+    //         public Double apply(final String description) {
+    //             try {
+    //                 int end = textAdapt.indexOf(description);
+    //                 String part = textAdapt.substring(0, end);
+    //                 final int start = part.lastIndexOf("\n");
+    //                 end = part.lastIndexOf(",");
+    //                 part = part.substring(start + 1, end + 3);
+
+    //                 return Double.parseDouble(part.replace(",", "."));
+    //             } catch (Exception e) {
+    //                 return 0.0;
+    //             }
+    //         }
+    //     };
+
+    //     paycheck.setWorkedDays(getReference.apply(Env.WORKED_DAYS_LABEL));
+    //     paycheck.setNightShiftHours(getReference.apply(Env.NIGHT_SHIFT_HOURS_LABEL));
+    //     paycheck.setOvertimeValue(Money.findOrCreate(getValue.apply(Env.OVERTIME_LABEL)));
+    //     paycheck.setClosedSectorValue(Money.findOrCreate(getValue.apply(Env.CLOSED_SECTOR_LABEL)));
+    //     paycheck.setHealthCarePlanActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_LABEL));
+    //     paycheck.setHealthCarePlanForDependentActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL));
+
+    //     paycheck.getWorkedDays();
+    // }
+
 }
