@@ -7,19 +7,31 @@ public class Paycheck {
     private final Employee employee;
     private final Competence competence;
     private final Money value;
-    private int workedDays = 0;
-    private int nightShiftHours = 0;
-    private Money overtimeValue = Money.findOrCreate(0);
-    private Money closedSectorValue = Money.findOrCreate(0);
-    private boolean healthCarePlanActive = false;
-    private boolean healthCarePlanForDependentActive = false;
+    private final int workedDays;
+    private final int nightShiftHours;
+    private final Money overtimeValue;
+    private final Money closedSectorValue;
+    private final boolean healthCarePlanActive;
+    private final boolean healthCarePlanForDependentActive;
 
-    public Paycheck(final Employee employee, final Competence competence, final double value) {
+    public Paycheck(final Employee employee, final Competence competence, final double value, final int workedDays,
+            final int nightShiftHours, final double overtimeValue, final double closedSectorValue,
+            final boolean healthCarePlanActive, final boolean healthCarePlanForDependentActive) {
         this.employee = employee;
         this.competence = competence;
         this.value = Money.findOrCreate(value);
+        this.workedDays = workedDays;
+        this.nightShiftHours = nightShiftHours;
+        this.overtimeValue = Money.findOrCreate(overtimeValue);
+        this.closedSectorValue = Money.findOrCreate(closedSectorValue);
+        this.healthCarePlanActive = healthCarePlanActive;
+        this.healthCarePlanForDependentActive = healthCarePlanForDependentActive;
 
         employee.addPaycheck(this);
+    }
+
+    public Paycheck(final Employee employee, final Competence competence, final double value) {
+        this(employee, competence, value, 0, 0, 0.0, 0.0, false, false);
     }
 
     public Money getValue() {
@@ -42,33 +54,33 @@ public class Paycheck {
         return workedDays;
     }
 
-    public void setWorkedDays(int workedDays) {
-        this.workedDays = workedDays;
-    }
+    // public void setWorkedDays(int workedDays) {
+    // this.workedDays = workedDays;
+    // }
 
     public int getNightShiftHours() {
         return nightShiftHours;
     }
 
-    public void setNightShiftHours(final int nightShiftHours) {
-        this.nightShiftHours = nightShiftHours;
-    }
+    // public void setNightShiftHours(final int nightShiftHours) {
+    // this.nightShiftHours = nightShiftHours;
+    // }
 
     public Money getOvertimeValue() {
         return overtimeValue;
     }
 
-    public void setOvertimeValue(final Money overtimeValue) {
-        this.overtimeValue = overtimeValue;
-    }
+    // public void setOvertimeValue(final Money overtimeValue) {
+    // this.overtimeValue = overtimeValue;
+    // }
 
     public Money getClosedSectorValue() {
         return closedSectorValue;
     }
 
-    public void setClosedSectorValue(Money closedSectorValue) {
-        this.closedSectorValue = closedSectorValue;
-    }
+    // public void setClosedSectorValue(Money closedSectorValue) {
+    // this.closedSectorValue = closedSectorValue;
+    // }
 
     public String getDetails() {
         return getWorkedDays() + " dia(s) de Salário-Base\n"
@@ -80,7 +92,8 @@ public class Paycheck {
     }
 
     public String getSummary(final boolean withWorkedDays, final boolean withNightShiftHours,
-            final boolean withOvertimeValue, final boolean withClosedSectorValue, final boolean withHealthCarePlanActive,
+            final boolean withOvertimeValue, final boolean withClosedSectorValue,
+            final boolean withHealthCarePlanActive,
             final boolean withHealthCarePlanForDependentActive) {
         List<String> result = new ArrayList<>();
 
@@ -153,15 +166,15 @@ public class Paycheck {
         return healthCarePlanActive;
     }
 
-    public void setHealthCarePlanActive(boolean healthCarePlanActive) {
-        this.healthCarePlanActive = healthCarePlanActive;
-    }
+    // public void setHealthCarePlanActive(boolean healthCarePlanActive) {
+    //     this.healthCarePlanActive = healthCarePlanActive;
+    // }
 
     public boolean isHealthCarePlanForDependentActive() {
         return healthCarePlanForDependentActive;
     }
 
-    public void setHealthCarePlanForDependentActive(boolean healthCarePlanDependentActive) {
-        this.healthCarePlanForDependentActive = healthCarePlanDependentActive;
-    }
+    // public void setHealthCarePlanForDependentActive(boolean healthCarePlanDependentActive) {
+    //     this.healthCarePlanForDependentActive = healthCarePlanDependentActive;
+    // }
 }

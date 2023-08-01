@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -18,8 +17,6 @@ public class Money implements Comparable<Money> {
     private static final List<Money> instances = new ArrayList<>();
 
     // Padrões para a moeda
-    private static final Locale defaultLocale = new Locale("pt", "BR");
-    private static final Currency defaultCurrency = Currency.getInstance(defaultLocale);
     private static final String defaultFormatterPattern = "¤ #,###,##0.00";
 
     // Valor
@@ -54,7 +51,7 @@ public class Money implements Comparable<Money> {
     // Método para obter a instância do dinheiro sem informar a moeda
     public static Money findOrCreate(final double value) {
         // Invocar mesmo método, passando a moeda padrão como argumento
-        return Money.findOrCreate(value, defaultCurrency);
+        return Money.findOrCreate(value, Env.DEFAULT_CURRENCY);
     }
 
     // Método para obter uma instância de formatador
