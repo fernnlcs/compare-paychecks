@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.Scanner;
 
 public class DriveFinder {
-    private static final String identifier = Env.driveIdentifier;
+    private static final String identifier = Env.DRIVE_IDENTIFIER;
 
     public static Path findDrive() {
         final File[] drives = File.listRoots();

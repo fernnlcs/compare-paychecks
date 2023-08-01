@@ -41,7 +41,7 @@ public abstract class FileDataHandler {
 
     // Método para extrair os dias trabalhados
     public static void extractPaycheckDetails(final Paycheck paycheck, final String pageText) {
-        final int startIndex = pageText.lastIndexOf("Discriminação das Verbas");
+        final int startIndex = pageText.lastIndexOf(Env.DETAILS_TITLE);
         final String textAdapt = pageText.substring(startIndex);
 
         final Callback<String, Integer> getReference = new Callback<String, Integer>() {
@@ -76,12 +76,12 @@ public abstract class FileDataHandler {
             }
         };
 
-        paycheck.setWorkedDays(getReference.call(" dia(s)Salário-Base011"));
-        paycheck.setNightShiftHours(getReference.call("hAdicional Noturno"));
-        paycheck.setOvertimeValue(Money.findOrCreate(getValue.call("Cl 4")));
-        paycheck.setClosedSectorValue(Money.findOrCreate(getValue.call("Gratifica")));
-        paycheck.setHealthCarePlanActive(textAdapt.contains("Plano de Saúde do Titular"));
-        paycheck.setHealthCarePlanForDependentActive(textAdapt.contains("Plano de Saúde do Dependente"));
+        paycheck.setWorkedDays(getReference.call(Env.WORKED_DAYS_LABEL));
+        paycheck.setNightShiftHours(getReference.call(Env.NIGHT_SHIFT_HOURS_LABEL));
+        paycheck.setOvertimeValue(Money.findOrCreate(getValue.call(Env.OVERTIME_LABEL)));
+        paycheck.setClosedSectorValue(Money.findOrCreate(getValue.call(Env.CLOSED_SECTOR_LABEL)));
+        paycheck.setHealthCarePlanActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_LABEL));
+        paycheck.setHealthCarePlanForDependentActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL));
 
         paycheck.getWorkedDays();
     }

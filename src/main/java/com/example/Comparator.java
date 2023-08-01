@@ -39,7 +39,7 @@ public class Comparator {
     private static void setRootPath() {
         final Path drive = DriveFinder.findDrive();
 
-        inputFolderPath = drive.resolve(Env.myDrive).resolve(Env.paychecks);
+        inputFolderPath = drive.resolve(Env.MY_DRIVE).resolve(Env.PAYCHECKS);
     }
 
     // Método para buscar um arquivo PDF
