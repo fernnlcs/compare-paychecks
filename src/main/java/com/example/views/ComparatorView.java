@@ -11,10 +11,13 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -27,6 +30,11 @@ public class ComparatorView extends Application {
 
         final String previousTitle = comparator.getPreviousPayroll().getCompetence().toString();
         final String currentTitle = comparator.getCurrentPayroll().getCompetence().toString();
+
+        // Criar filtros
+        final HBox filtersBox = new HBox(new Text("Filtros"));
+        final TitledPane filters = new TitledPane("Filtrar", filtersBox);
+        filters.setCollapsible(false);
 
         // Criação da tabela
         final TableView<IndividualView> tableView = new TableView<>();
@@ -156,10 +164,16 @@ public class ComparatorView extends Application {
         });
 
         // Criação do layout
-        final AnchorPane root = new AnchorPane(tableView);
+        final AnchorPane root = new AnchorPane(filters, tableView);
+
+        // Configuração das âncoras dos filtros
+        AnchorPane.setTopAnchor(filters, 0.0);
+        AnchorPane.setBottomAnchor(filters, 100.0);
+        AnchorPane.setLeftAnchor(filters, 0.0);
+        AnchorPane.setRightAnchor(filters, 0.0);
 
         // Configuração das âncoras da tabela
-        AnchorPane.setTopAnchor(tableView, 0.0);
+        AnchorPane.setTopAnchor(tableView, 100.0);
         AnchorPane.setBottomAnchor(tableView, 0.0);
         AnchorPane.setLeftAnchor(tableView, 0.0);
         AnchorPane.setRightAnchor(tableView, 0.0);
