@@ -4,11 +4,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public abstract class FileDataHandler {
     private static final Map<Integer, String> FORMATTED_MONTHS = new HashMap<>(12);
     private static final SimpleDateFormat formatter = new SimpleDateFormat("MM. MMMM", Env.DEFAULT_LOCALE);
+    private static final SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM", Env.DEFAULT_LOCALE);
 
     // Método para extrair a data do nome do arquivo original
     public static String extractFileDate(final String fileName) {
@@ -39,7 +39,7 @@ public abstract class FileDataHandler {
         }
 
         // Configurar um calendário para o primeiro dia do mês
-        final Calendar calendar = Calendar.getInstance();
+        final Calendar calendar = Calendar.getInstance(Env.DEFAULT_LOCALE);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         calendar.set(Calendar.MONTH, month - 1);
 
@@ -53,7 +53,21 @@ public abstract class FileDataHandler {
         return String.valueOf(chars);
     }
 
-    public static int extractPaycheckReference(final String pageText, final String description) {
+    public static int getMonthNumber(final String monthName) {
+        final Calendar calendar = Calendar.getInstance(Env.DEFAULT_LOCALE);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+
+        for (int i = 0; i < 11; i++) {
+            calendar.set(Calendar.MONTH, i);
+            if (monthName.toLowerCase().equals(monthFormatter.format(calendar.getTime()))) {
+                return i + 1;
+            }
+        }
+
+        return 0;
+    }
+
+    public static int extractPaycheckReference(final StringBuilder pageText, final String description) {
         try {
             final int end = pageText.indexOf(description);
             final String part = pageText.substring(0, end);
@@ -65,7 +79,7 @@ public abstract class FileDataHandler {
         }
     }
 
-    public static double extractPaycheckValue(final String pageText, final String description) {
+    public static double extractPaycheckValue(final StringBuilder pageText, final String description) {
         try {
             int end = pageText.indexOf(description);
             String part = pageText.substring(0, end);
@@ -79,55 +93,7 @@ public abstract class FileDataHandler {
         }
     }
 
-    public static boolean checkIfPaycheckLabelExists(final String pageText, final String description) {
-        return pageText.contains(description);
+    public static boolean checkIfPaycheckLabelExists(final StringBuilder pageText, final String description) {
+        return pageText.toString().contains(description);
     }
-
-    // Método para extrair os dias trabalhados
-    // public static void extractPaycheckDetails(final Paycheck paycheck, final String pageText) {
-    //     final int startIndex = pageText.lastIndexOf(Env.DETAILS_TITLE);
-    //     final String textAdapt = pageText.substring(startIndex);
-
-    //     final Function<String, Integer> getReference = new Function<String, Integer>() {
-    //         @Override
-    //         public Integer apply(final String description) {
-    //             try {
-    //                 final int end = textAdapt.indexOf(description);
-    //                 final String part = textAdapt.substring(0, end);
-    //                 final int start = part.lastIndexOf(",");
-
-    //                 return Integer.parseInt(textAdapt.substring(start + 3, end));
-    //             } catch (Exception e) {
-    //                 return 0;
-    //             }
-    //         }
-    //     };
-
-    //     final Function<String, Double> getValue = new Function<String, Double>() {
-    //         @Override
-    //         public Double apply(final String description) {
-    //             try {
-    //                 int end = textAdapt.indexOf(description);
-    //                 String part = textAdapt.substring(0, end);
-    //                 final int start = part.lastIndexOf("\n");
-    //                 end = part.lastIndexOf(",");
-    //                 part = part.substring(start + 1, end + 3);
-
-    //                 return Double.parseDouble(part.replace(",", "."));
-    //             } catch (Exception e) {
-    //                 return 0.0;
-    //             }
-    //         }
-    //     };
-
-    //     paycheck.setWorkedDays(getReference.apply(Env.WORKED_DAYS_LABEL));
-    //     paycheck.setNightShiftHours(getReference.apply(Env.NIGHT_SHIFT_HOURS_LABEL));
-    //     paycheck.setOvertimeValue(Money.findOrCreate(getValue.apply(Env.OVERTIME_LABEL)));
-    //     paycheck.setClosedSectorValue(Money.findOrCreate(getValue.apply(Env.CLOSED_SECTOR_LABEL)));
-    //     paycheck.setHealthCarePlanActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_LABEL));
-    //     paycheck.setHealthCarePlanForDependentActive(textAdapt.contains(Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL));
-
-    //     paycheck.getWorkedDays();
-    // }
-
 }

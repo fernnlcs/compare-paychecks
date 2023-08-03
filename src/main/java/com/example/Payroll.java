@@ -1,15 +1,13 @@
 package com.example;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
+import java.util.function.Function;
 import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 
@@ -52,27 +50,44 @@ public class Payroll {
             textStripper.setStartPage(i + 1);
             textStripper.setEndPage(i + 1);
 
-            final String pageText = textStripper.getText(document);
-            write(pageText);
+            final StringBuilder pageText = new StringBuilder(textStripper.getText(document));
 
-            final int employeeIndex = pageText.lastIndexOf("Empregado");
-            final String employeeLine = pageText.substring(employeeIndex).split("\n")[1];
-            final String employeeName = employeeLine.substring(employeeLine.indexOf(" ") + 1).trim();
-            final int employeeRegistration = Integer.parseInt(employeeLine.substring(0, employeeLine.indexOf(" ")));
+            // Função para obter a informação da linha abaixo
+            final Function<String, String> getLineUnder = new Function<String, String>() {
 
-            final int valueIndex = pageText.lastIndexOf("Líquido a Receber");
-            final String valueText = pageText.substring(valueIndex).split("\n")[1].trim();
-            final double value = Double.parseDouble(valueText.replace(".", "").replace(",", "."));
+                @Override
+                public String apply(final String label) {
+                    return pageText.substring(pageText.lastIndexOf(label)).split("\n")[1].trim();
+                }
 
-            final Employee employee = Employee.findOrCreate(employeeRegistration, employeeName);
+            };
+
+            // Definir funcionário
+            final String employeeLine = getLineUnder.apply(Env.EMPLOYEE_LABEL);
+            final Employee employee = Employee.findOrCreate(
+                    Integer.parseInt(employeeLine.substring(0, employeeLine.indexOf(" "))), // Registration
+                    employeeLine.substring(employeeLine.indexOf(" ") + 1).trim()); // Name
+
+            // Definir valor
+            final double value = Double.parseDouble(getLineUnder.apply(Env.VALUE_LABEL)
+                    .replace(".", "")
+                    .replace(",", "."));
+
+            // Definir competência
+            final String competenceDescription = getLineUnder.apply(Env.COMPETENCE_LABEL).replace(" de ", "_");
+            final String[] competenceParts = competenceDescription.split("_");
+            final Competence competence = Competence.findOrCreate(
+                    Integer.parseInt(competenceParts[1]), // Year
+                    FileDataHandler.getMonthNumber(competenceParts[0])); // Month
+
+            // Criar contracheque
             final Paycheck paycheck = new Paycheck(employee, competence, value,
                     FileDataHandler.extractPaycheckReference(pageText, Env.WORKED_DAYS_LABEL),
                     FileDataHandler.extractPaycheckReference(pageText, Env.NIGHT_SHIFT_HOURS_LABEL),
                     FileDataHandler.extractPaycheckValue(pageText, Env.OVERTIME_LABEL),
                     FileDataHandler.extractPaycheckValue(pageText, Env.CLOSED_SECTOR_LABEL),
                     FileDataHandler.checkIfPaycheckLabelExists(pageText, Env.HEALTH_CARE_PLAN_LABEL),
-                    FileDataHandler.checkIfPaycheckLabelExists(pageText, Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL)
-                    );
+                    FileDataHandler.checkIfPaycheckLabelExists(pageText, Env.HEALTH_CARE_PLAN_FOR_DEPENDENT_LABEL));
             // FileDataHandler.extractPaycheckDetails(paycheck, pageText);
 
             paychecks.add(paycheck);
@@ -99,20 +114,5 @@ public class Payroll {
 
     public Competence getCompetence() {
         return competence;
-    }
-
-    private void write(String text) {
-        if (new File("C:\\Users\\iepeh\\Documentos\\Conteúdo.txt").exists()) {
-            return;
-        }
-
-        text = text.replaceAll("\r", "");
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\iepeh\\Documentos\\Conteúdo.txt"))) {
-            writer.write(text);
-            System.out.println("String escrita no arquivo com sucesso.");
-        } catch (IOException e) {
-            System.out.println("Erro ao escrever a string no arquivo: " + e.getMessage());
-        }
     }
 }

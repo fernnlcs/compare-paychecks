@@ -41,6 +41,17 @@ public class Competence {
         return findOrCreate(year, month);
     }
 
+    // Método para obter a instância da competência
+    public static Competence findOrCreateByPage(final String pageText) {
+        // Separar mês e ano em variáveis diferentes
+        final String[] parts = pageText.split("\\.");
+        final int year = Integer.parseInt(parts[0]);
+        final int month = Integer.parseInt(parts[1]);
+
+        // Invocar o método principal
+        return findOrCreate(year, month);
+    }
+
     // Construtor privado
     private Competence(final int year, final int month) {
         this.year = year;

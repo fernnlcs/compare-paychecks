@@ -55,33 +55,17 @@ public class Paycheck {
         return workedDays;
     }
 
-    // public void setWorkedDays(int workedDays) {
-    // this.workedDays = workedDays;
-    // }
-
     public int getNightShiftHours() {
         return nightShiftHours;
     }
-
-    // public void setNightShiftHours(final int nightShiftHours) {
-    // this.nightShiftHours = nightShiftHours;
-    // }
 
     public Money getOvertimeValue() {
         return overtimeValue;
     }
 
-    // public void setOvertimeValue(final Money overtimeValue) {
-    // this.overtimeValue = overtimeValue;
-    // }
-
     public Money getClosedSectorValue() {
         return closedSectorValue;
     }
-
-    // public void setClosedSectorValue(Money closedSectorValue) {
-    // this.closedSectorValue = closedSectorValue;
-    // }
 
     public String getDetails() {
         return getWorkedDays() + " dia(s) de Salário-Base\n"
@@ -167,16 +151,7 @@ public class Paycheck {
         return healthCarePlanActive;
     }
 
-    // public void setHealthCarePlanActive(boolean healthCarePlanActive) {
-    // this.healthCarePlanActive = healthCarePlanActive;
-    // }
-
     public boolean isHealthCarePlanForDependentActive() {
         return healthCarePlanForDependentActive;
     }
-
-    // public void setHealthCarePlanForDependentActive(boolean
-    // healthCarePlanDependentActive) {
-    // this.healthCarePlanForDependentActive = healthCarePlanDependentActive;
-    // }
 }
