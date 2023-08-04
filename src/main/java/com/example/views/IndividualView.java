@@ -12,7 +12,6 @@ import com.example.Competence;
 import com.example.Employee;
 import com.example.FileDataHandler;
 import com.example.Money;
-// import com.example.MoneyDiff;
 import com.example.Paycheck;
 
 import javafx.event.ActionEvent;
@@ -24,6 +23,8 @@ public class IndividualView {
     private static final String individualPaychecksFolder = "Por nome";
     private static final Desktop desktop = Desktop.getDesktop();
 
+    private final Paycheck previousPaycheck;
+    private final Paycheck currentPaycheck;
     private final String registration;
     private final String name;
     private final Money previousValue;
@@ -55,6 +56,9 @@ public class IndividualView {
                 currentPaycheck = paycheck;
             }
         }
+
+        this.previousPaycheck = previousPaycheck;
+        this.currentPaycheck = currentPaycheck;
 
         // Definindo as informações que vão no resumo
         final boolean withWorkedDays = previousPaycheck.getWorkedDays() != currentPaycheck.getWorkedDays();
@@ -189,5 +193,13 @@ public class IndividualView {
 
     public File getCurrentPdf() {
         return currentPdf;
+    }
+
+    public Paycheck getPreviousPaycheck() {
+        return previousPaycheck;
+    }
+
+    public Paycheck getCurrentPaycheck() {
+        return currentPaycheck;
     }
 }

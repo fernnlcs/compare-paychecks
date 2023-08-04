@@ -1,11 +1,20 @@
 package com.example.views;
 
+import java.util.function.Predicate;
+
 import com.example.Comparator;
+import com.example.Env;
 import com.example.Money;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -17,7 +26,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -30,11 +38,6 @@ public class ComparatorView extends Application {
 
         final String previousTitle = comparator.getPreviousPayroll().getCompetence().toString();
         final String currentTitle = comparator.getCurrentPayroll().getCompetence().toString();
-
-        // Criar filtros
-        final HBox filtersBox = new HBox(new Text("Filtros"));
-        final TitledPane filters = new TitledPane("Filtrar", filtersBox);
-        filters.setCollapsible(false);
 
         // Criação da tabela
         final TableView<IndividualView> tableView = new TableView<>();
@@ -143,7 +146,18 @@ public class ComparatorView extends Application {
                 currentDetailsColumn, hyperlinksColumn);
 
         // Adiciona os objetos na tabela
-        tableView.setItems(FXCollections.observableArrayList(comparator.compare()));
+        final ObservableList<IndividualView> allRows = FXCollections.observableArrayList(comparator.compare());
+
+        final FilteredList<IndividualView> filteredRows = allRows.filtered(new Predicate<IndividualView>() {
+
+            @Override
+            public boolean test(final IndividualView view) {
+                return true;
+            }
+
+        });
+
+        tableView.setItems(filteredRows);
 
         // Adiciona a coluna de nome como a ordenação padrão
         tableView.getSortOrder().add(nameColumn);
@@ -162,6 +176,37 @@ public class ComparatorView extends Application {
             }
 
         });
+
+        // Configurar filtros
+        final CheckBox withOverTime = new CheckBox(Env.OVERTIME_LABEL);
+        withOverTime.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(final ActionEvent event) {
+                final Predicate<IndividualView> predicate = new Predicate<IndividualView>() {
+
+                    @Override
+                    public boolean test(final IndividualView view) {
+                        if (withOverTime.isSelected()) {
+                            return view.getPreviousPaycheck().hasOvertimeValueAtLeast(0.01);
+                        }
+                        return true;
+                    }
+
+                };
+                filteredRows.setPredicate(predicate);
+            }
+
+        });
+
+        // Criar filtros
+        final HBox filtersBox = new HBox(
+                new HBox(withOverTime));
+
+        // Criar painel dos filtros
+        final TitledPane filters = new TitledPane("Filtrar", filtersBox);
+        filters.setCollapsible(false);
+        filters.setAlignment(Pos.CENTER);
 
         // Criação do layout
         final AnchorPane root = new AnchorPane(filters, tableView);

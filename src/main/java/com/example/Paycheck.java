@@ -109,6 +109,30 @@ public class Paycheck {
         return String.join("\n", result);
     }
 
+    public boolean isHealthCarePlanActive() {
+        return healthCarePlanActive;
+    }
+
+    public boolean isHealthCarePlanForDependentActive() {
+        return healthCarePlanForDependentActive;
+    }
+
+    public boolean hasWorkedAtLeast(final int days) {
+        return workedDays >= days;
+    }
+
+    public boolean hasNightShiftHoursAtLeast(final int hours) {
+        return nightShiftHours >= hours;
+    }
+
+    public boolean hasOvertimeValueAtLeast(final double value) {
+        return overtimeValue.value >= value;
+    }
+
+    public boolean hasClosedSectorAtLeast(final double value) {
+        return closedSectorValue.value >= value;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -145,13 +169,5 @@ public class Paycheck {
 
         return competence.toString() + " | " + employee.getRegistration() + " - " + employee.getName() + " | "
                 + getValue();
-    }
-
-    public boolean isHealthCarePlanActive() {
-        return healthCarePlanActive;
-    }
-
-    public boolean isHealthCarePlanForDependentActive() {
-        return healthCarePlanForDependentActive;
     }
 }
